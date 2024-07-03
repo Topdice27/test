@@ -32,6 +32,7 @@
         const obstacleSpawnRate = 1500; // milliseconds
         let lastSpawnTime = 0;
         let gameOver = false;
+        let score = 0;
 
         function drawDino() {
             ctx.fillStyle = '#666';
@@ -43,6 +44,12 @@
             obstacles.forEach(obstacle => {
                 ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
             });
+        }
+
+        function drawScore() {
+            ctx.fillStyle = '#000';
+            ctx.font = '24px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 30);
         }
 
         function clearCanvas() {
@@ -68,7 +75,7 @@
             }
 
             // Update obstacle positions
-            obstacles.forEach(obstacle => {
+            obstacles.forEach((obstacle, index) => {
                 obstacle.x -= obstacleSpeed;
 
                 // Check collision with dino
@@ -77,8 +84,14 @@
                     dino.y < obstacle.y + obstacleHeight &&
                     dino.y + dino.height > obstacle.y) {
                     gameOver = true;
-                    alert('Game Over!');
+                    alert(`Game Over! Your score: ${score}`);
                     location.reload(); // restart the game
+                }
+
+                // Check if dino jumped over the obstacle
+                if (obstacle.x + obstacleWidth < dino.x && !obstacle.passed) {
+                    obstacle.passed = true;
+                    score++;
                 }
             });
 
@@ -86,7 +99,7 @@
             if (timestamp - lastSpawnTime > obstacleSpawnRate) {
                 lastSpawnTime = timestamp;
                 let obstacleY = canvas.height - obstacleHeight; // ground level
-                obstacles.push({ x: canvas.width, y: obstacleY });
+                obstacles.push({ x: canvas.width, y: obstacleY, passed: false });
             }
 
             // Remove obstacles that have gone off screen
@@ -95,6 +108,7 @@
             // Draw everything
             drawDino();
             drawObstacles();
+            drawScore();
 
             requestAnimationFrame(gameLoop);
         }
