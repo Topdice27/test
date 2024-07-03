@@ -24,41 +24,71 @@
         const canvas = document.getElementById('game-frame');
         const ctx = canvas.getContext('2d');
 
-        let dinoX = 50;
-        let dinoY = 150;
-        let jumping = false;
+        let dino = { x: 50, y: 150, width: 50, height: 50, jumping: false, yVelocity: 0 };
+
+        let obstacles = [];
+        const obstacleWidth = 20;
+        const obstacleHeight = 50;
+        const obstacleSpeed = 5;
+        const obstacleSpawnRate = 1500; // milliseconds
+        let lastSpawnTime = 0;
 
         function drawDino() {
             ctx.fillStyle = '#666';
-            ctx.fillRect(dinoX, dinoY, 50, 50);
+            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+        }
+
+        function drawObstacles() {
+            ctx.fillStyle = '#333';
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+            });
         }
 
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        function gameLoop() {
+        function gameLoop(timestamp) {
             clearCanvas();
-            drawDino();
 
-            if (jumping) {
-                dinoY -= 5;
-            } else if (dinoY < 150) {
-                dinoY += 5;
+            // Update dino position
+            if (dino.jumping) {
+                dino.yVelocity += 0.5; // gravity
+                dino.y -= dino.yVelocity;
+                if (dino.y >= 150) {
+                    dino.y = 150;
+                    dino.yVelocity = 0;
+                    dino.jumping = false;
+                }
             }
+
+            // Update obstacle positions
+            obstacles.forEach(obstacle => {
+                obstacle.x -= obstacleSpeed;
+            });
+
+            // Spawn new obstacles
+            if (timestamp - lastSpawnTime > obstacleSpawnRate) {
+                lastSpawnTime = timestamp;
+                let obstacleY = 150 - obstacleHeight; // ground level
+                obstacles.push({ x: canvas.width, y: obstacleY });
+            }
+
+            // Remove obstacles that have gone off screen
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
+
+            // Draw everything
+            drawDino();
+            drawObstacles();
 
             requestAnimationFrame(gameLoop);
         }
 
         document.addEventListener('keydown', function(event) {
-            if (event.code === 'Space') {
-                jumping = true;
-            }
-        });
-
-        document.addEventListener('keyup', function(event) {
-            if (event.code === 'Space') {
-                jumping = false;
+            if (event.code === 'Space' && !dino.jumping) {
+                dino.jumping = true;
+                dino.yVelocity = 10; // initial jump velocity
             }
         });
 
@@ -66,3 +96,4 @@
     </script>
 </body>
 </html>
+
