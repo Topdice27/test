@@ -22,7 +22,8 @@
         right: 10px;
         background: white;
         border: 1px solid #333;
-        padding: 10px;
+        padding: 20px;
+        font-size: 1.5em; /* Increase font size for leaderboard */
     }
 </style>
 </head>
@@ -73,8 +74,8 @@
 
         function drawScore() {
             ctx.fillStyle = '#000';
-            ctx.font = '24px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 30);
+            ctx.font = '36px Arial'; // Increase font size for score
+            ctx.fillText(`Score: ${score}`, 10, 40); // Adjust position if needed
         }
 
         function clearCanvas() {
@@ -124,13 +125,17 @@
                 obstacles.push({ x: canvas.width, y: obstacleY, type: type, passed: false });
             }
 
-            obstacles = obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
+            obstacles = filteredObstacles(obstacles);
 
             drawDino();
             drawObstacles();
             drawScore();
 
             requestAnimationFrame(gameLoop);
+        }
+
+        function filteredObstacles(obstacles) {
+            return obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
         }
 
         document.addEventListener('keydown', function(event) {
