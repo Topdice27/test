@@ -24,7 +24,11 @@
         const canvas = document.getElementById('game-frame');
         const ctx = canvas.getContext('2d');
 
-        let dino = { x: 50, y: 150, width: 50, height: 50, jumping: false, yVelocity: 0 };
+        // Load Bigfoot image
+        const bigfootImg = new Image();
+        bigfootImg.src = 'bigfoot.png';
+
+        let dino = { x: 50, y: 100, width: 80, height: 100, jumping: false, yVelocity: 0 };
         let obstacles = [];
         const obstacleWidth = 20;
         const obstacleHeight = 50;
@@ -35,8 +39,8 @@
         let score = 0;
 
         function drawDino() {
-            ctx.fillStyle = '#666';
-            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+            // Draw Bigfoot image
+            ctx.drawImage(bigfootImg, dino.x, dino.y, dino.width, dino.height);
         }
 
         function drawObstacles() {
@@ -65,13 +69,13 @@
             if (dino.jumping) {
                 dino.y -= dino.yVelocity;
                 dino.yVelocity -= 0.5; // gravity
-                if (dino.y >= 150) {
-                    dino.y = 150;
+                if (dino.y >= 100) {
+                    dino.y = 100;
                     dino.yVelocity = 0;
                     dino.jumping = false;
                 }
             } else {
-                dino.y = 150; // reset to ground level
+                dino.y = 100; // reset to ground level
             }
 
             // Update obstacle positions
@@ -120,10 +124,14 @@
             }
         });
 
-        gameLoop();
+        // Ensure the image is loaded before starting the game loop
+        bigfootImg.onload = function() {
+            gameLoop();
+        };
     </script>
 </body>
 </html>
+
 
 
 
