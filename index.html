@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chrome Dino Game</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f7f7f7;
+    }
+    #game-frame {
+        border: 2px solid #333;
+    }
+</style>
+</head>
+<body>
+    <canvas id="game-frame" width="600" height="200"></canvas>
+    <script>
+        const canvas = document.getElementById('game-frame');
+        const ctx = canvas.getContext('2d');
+
+        let dinoX = 50;
+        let dinoY = 150;
+        let jumping = false;
+
+        function drawDino() {
+            ctx.fillStyle = '#666';
+            ctx.fillRect(dinoX, dinoY, 50, 50);
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function gameLoop() {
+            clearCanvas();
+            drawDino();
+
+            if (jumping) {
+                dinoY -= 5;
+            } else if (dinoY < 150) {
+                dinoY += 5;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                jumping = true;
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.code === 'Space') {
+                jumping = false;
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
