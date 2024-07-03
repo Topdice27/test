@@ -37,13 +37,19 @@
         const ctx = canvas.getContext('2d');
         const leaderboardList = document.getElementById('leaderboard-list');
 
-        // Load Bigfoot image
+        // Load images
         const bigfootImg = new Image();
-        bigfootImg.src = 'new_bigfoot.png'; // Use your new image file here
+        bigfootImg.src = 'new_bigfoot.png'; // Use your new Bigfoot image file
+
+        const rockImg = new Image();
+        rockImg.src = 'rock.png'; // Use your rock image file
+
+        const treeImg = new Image();
+        treeImg.src = 'tree.png'; // Use your tree image file
 
         let dino = { x: 50, y: 100, width: 80, height: 100, jumping: false, yVelocity: 0 };
         let obstacles = [];
-        const obstacleWidth = 20;
+        const obstacleWidth = 50;
         const obstacleHeight = 50;
         const obstacleSpeed = 5;
         const obstacleSpawnRate = 1500; // milliseconds
@@ -52,14 +58,16 @@
         let score = 0;
 
         function drawDino() {
-            // Draw Bigfoot image
             ctx.drawImage(bigfootImg, dino.x, dino.y, dino.width, dino.height);
         }
 
         function drawObstacles() {
-            ctx.fillStyle = '#333';
             obstacles.forEach(obstacle => {
-                ctx.fillRect(obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+                if (obstacle.type === 'rock') {
+                    ctx.drawImage(rockImg, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+                } else if (obstacle.type === 'tree') {
+                    ctx.drawImage(treeImg, obstacle.x, obstacle.y, obstacleWidth, obstacleHeight);
+                }
             });
         }
 
@@ -78,7 +86,6 @@
 
             clearCanvas();
 
-            // Update dino position
             if (dino.jumping) {
                 dino.y -= dino.yVelocity;
                 dino.yVelocity -= 0.5; // gravity
@@ -88,14 +95,12 @@
                     dino.jumping = false;
                 }
             } else {
-                dino.y = 100; // reset to ground level
+                dino.y = 100;
             }
 
-            // Update obstacle positions
             obstacles.forEach((obstacle, index) => {
                 obstacle.x -= obstacleSpeed;
 
-                // Check collision with dino
                 if (dino.x < obstacle.x + obstacleWidth &&
                     dino.x + dino.width > obstacle.x &&
                     dino.y < obstacle.y + obstacleHeight &&
@@ -103,27 +108,24 @@
                     gameOver = true;
                     saveScore(score);
                     alert(`Game Over! Your score: ${score}`);
-                    location.reload(); // restart the game
+                    location.reload();
                 }
 
-                // Check if dino jumped over the obstacle
                 if (obstacle.x + obstacleWidth < dino.x && !obstacle.passed) {
                     obstacle.passed = true;
                     score++;
                 }
             });
 
-            // Spawn new obstacles
             if (timestamp - lastSpawnTime > obstacleSpawnRate) {
                 lastSpawnTime = timestamp;
-                let obstacleY = canvas.height - obstacleHeight; // ground level
-                obstacles.push({ x: canvas.width, y: obstacleY, passed: false });
+                let obstacleY = canvas.height - obstacleHeight;
+                let type = Math.random() < 0.5 ? 'rock' : 'tree'; // Randomly choose rock or tree
+                obstacles.push({ x: canvas.width, y: obstacleY, type: type, passed: false });
             }
 
-            // Remove obstacles that have gone off screen
             obstacles = obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
 
-            // Draw everything
             drawDino();
             drawObstacles();
             drawScore();
@@ -134,11 +136,10 @@
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space' && !dino.jumping) {
                 dino.jumping = true;
-                dino.yVelocity = 12; // initial jump velocity (upward)
+                dino.yVelocity = 12;
             }
         });
 
-        // Ensure the image is loaded before starting the game loop
         bigfootImg.onload = function() {
             gameLoop();
         };
@@ -147,7 +148,7 @@
             const scores = JSON.parse(localStorage.getItem('scores')) || [];
             scores.push(newScore);
             scores.sort((a, b) => b - a);
-            if (scores.length > 5) scores.pop(); // Keep top 5 scores
+            if (scores.length > 5) scores.pop();
             localStorage.setItem('scores', JSON.stringify(scores));
             updateLeaderboard();
         }
@@ -162,7 +163,6 @@
             });
         }
 
-        // Initialize leaderboard on page load
         updateLeaderboard();
     </script>
 </body>
