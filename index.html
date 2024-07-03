@@ -54,7 +54,7 @@
             // Update dino position
             if (dino.jumping) {
                 dino.yVelocity += 0.5; // gravity
-                dino.y -= dino.yVelocity;
+                dino.y += dino.yVelocity;
                 if (dino.y >= 150) {
                     dino.y = 150;
                     dino.yVelocity = 0;
@@ -98,7 +98,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space' && !dino.jumping) {
                 dino.jumping = true;
-                dino.yVelocity = 10; // initial jump velocity
+                dino.yVelocity = -10; // initial jump velocity (upward)
             }
         });
 
@@ -106,4 +106,6 @@
     </script>
 </body>
 </html>
+
+
 
