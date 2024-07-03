@@ -85,7 +85,7 @@
             // Spawn new obstacles
             if (timestamp - lastSpawnTime > obstacleSpawnRate) {
                 lastSpawnTime = timestamp;
-                let obstacleY = 150 - obstacleHeight; // ground level
+                let obstacleY = canvas.height - obstacleHeight; // ground level
                 obstacles.push({ x: canvas.width, y: obstacleY });
             }
 
@@ -110,6 +110,7 @@
     </script>
 </body>
 </html>
+
 
 
 
