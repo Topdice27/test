@@ -31,7 +31,7 @@
         const obstacleSpeed = 5;
         const obstacleSpawnRate = 1500; // milliseconds
         let lastSpawnTime = 0;
-        let gameRunning = true;
+        let gameOver = false;
 
         function drawDino() {
             ctx.fillStyle = '#666';
@@ -50,16 +50,14 @@
         }
 
         function gameLoop(timestamp) {
-            clearCanvas();
+            if (gameOver) return;
 
-            if (!gameRunning) {
-                return; // Stop game loop if game is over
-            }
+            clearCanvas();
 
             // Update dino position
             if (dino.jumping) {
-                dino.yVelocity += 0.5; // gravity
-                dino.y += dino.yVelocity;
+                dino.y -= dino.yVelocity;
+                dino.yVelocity -= 0.5; // gravity
                 if (dino.y >= 150) {
                     dino.y = 150;
                     dino.yVelocity = 0;
@@ -78,7 +76,7 @@
                     dino.x + dino.width > obstacle.x &&
                     dino.y < obstacle.y + obstacleHeight &&
                     dino.y + dino.height > obstacle.y) {
-                    gameRunning = false; // Game over
+                    gameOver = true;
                     alert('Game Over!');
                     location.reload(); // restart the game
                 }
@@ -104,7 +102,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.code === 'Space' && !dino.jumping) {
                 dino.jumping = true;
-                dino.yVelocity = -10; // initial jump velocity (upward)
+                dino.yVelocity = 12; // initial jump velocity (upward)
             }
         });
 
@@ -112,6 +110,7 @@
     </script>
 </body>
 </html>
+
 
 
 
