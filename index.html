@@ -25,7 +25,6 @@
         const ctx = canvas.getContext('2d');
 
         let dino = { x: 50, y: 150, width: 50, height: 50, jumping: false, yVelocity: 0 };
-
         let obstacles = [];
         const obstacleWidth = 20;
         const obstacleHeight = 50;
@@ -61,11 +60,22 @@
                     dino.yVelocity = 0;
                     dino.jumping = false;
                 }
+            } else {
+                dino.y = 150; // reset to ground level
             }
 
             // Update obstacle positions
             obstacles.forEach(obstacle => {
                 obstacle.x -= obstacleSpeed;
+
+                // Check collision with dino
+                if (dino.x < obstacle.x + obstacleWidth &&
+                    dino.x + dino.width > obstacle.x &&
+                    dino.y < obstacle.y + obstacleHeight &&
+                    dino.y + dino.height > obstacle.y) {
+                    alert('Game Over!');
+                    location.reload(); // restart the game
+                }
             });
 
             // Spawn new obstacles
