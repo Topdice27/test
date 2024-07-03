@@ -16,13 +16,26 @@
     #game-frame {
         border: 2px solid #333;
     }
+    #leaderboard {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: white;
+        border: 1px solid #333;
+        padding: 10px;
+    }
 </style>
 </head>
 <body>
     <canvas id="game-frame" width="600" height="200"></canvas>
+    <div id="leaderboard">
+        <h3>Leaderboard</h3>
+        <ol id="leaderboard-list"></ol>
+    </div>
     <script>
         const canvas = document.getElementById('game-frame');
         const ctx = canvas.getContext('2d');
+        const leaderboardList = document.getElementById('leaderboard-list');
 
         // Load Bigfoot image
         const bigfootImg = new Image();
@@ -88,6 +101,7 @@
                     dino.y < obstacle.y + obstacleHeight &&
                     dino.y + dino.height > obstacle.y) {
                     gameOver = true;
+                    saveScore(score);
                     alert(`Game Over! Your score: ${score}`);
                     location.reload(); // restart the game
                 }
@@ -128,14 +142,28 @@
         bigfootImg.onload = function() {
             gameLoop();
         };
+
+        function saveScore(newScore) {
+            const scores = JSON.parse(localStorage.getItem('scores')) || [];
+            scores.push(newScore);
+            scores.sort((a, b) => b - a);
+            if (scores.length > 5) scores.pop(); // Keep top 5 scores
+            localStorage.setItem('scores', JSON.stringify(scores));
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const scores = JSON.parse(localStorage.getItem('scores')) || [];
+            leaderboardList.innerHTML = '';
+            scores.forEach((score, index) => {
+                const li = document.createElement('li');
+                li.textContent = `#${index + 1}: ${score}`;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        // Initialize leaderboard on page load
+        updateLeaderboard();
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
